@@ -1,0 +1,218 @@
+/*=====================================
+ 開發模板_v1.3_線上學員
+=====================================*/
+
+//------------------------------------- 1. GAS全域變數的方法
+var SCRIPT_PROP = PropertiesService.getScriptProperties(); // new property service
+//------------------------------------- 2. 路由
+var Route = {};
+Route.path = function (route, callback) {
+  Route[route] = callback;
+}
+//------------------------------------- 3. 宣告
+var global, menu;
+
+/*========================
+寫入試算表內容的方法
+=========================== */
+function test3() {
+  let ss = SpreadsheetApp.getActiveSpreadsheet();//取得試算表
+  //console.log(ss);//輸出打印以確認是否成功抓取
+  let ws = ss.getSheetByName('test_sheet')//取得工作表
+  //console.log(ws);//輸出打印以確認是否成功抓取
+
+  /*
+  //寫入繳費單範例(單一寫入基本演示)
+    let range;
+    range = ws.getRange(1,1)//取得範圍
+    range.setValue('單位')//寫入內容
+    range = ws.getRange(1,2)//取得範圍
+    range.setValue('日期')//寫入內容
+    range = ws.getRange(1,3)//取得範圍
+    range.setValue('金額')//寫入內容
+    range = ws.getRange(1,4)//取得範圍
+    range.setValue('其他')//寫入內容
+  */
+
+  /*
+  //寫入繳費單範例(多重寫入循環演示)
+    let title = ['單位', '日期', '金額', '其他','備註1'];
+    for (var i = 0; i < title.length; i++) {
+      ws.getRange(3, 1+i).setValue(title[i]);
+    }
+
+  */
+
+  /*
+  //寫入繳費單範例(多重寫入forin循環演示)
+  let data = ['單位', '日期', '金額', '其他', '備註2'];
+  //字串 轉 數字 parseInt() Number()
+  for (let i in data) {
+    //寫資料
+    let I = parseInt(i);
+    range = ws.getRange(5, 1+I);
+    range.setValue(data[I]);
+  }
+  */
+
+/*========================
+Test2
+=========================== */
+/*
+function test2() {
+  let item = {
+    width: '3',
+    label: '姓名',
+    type: "text",
+    name: "name",
+    value: "",
+    vaild: "required",
+    option: "單選1|單選2|單選3"
+  };
+
+  item['width']
+  item.width
+
+  for (let i in item) {
+    console.log(i + ':' + item[i])
+  }
+
+  let form_item = [
+    {
+      width: '3',
+      label: '姓名',
+      type: "text",
+      name: "name",
+      value: "",
+      vaild: "required",
+      option: ""
+    },
+    {
+      width: '3',
+      label: '網址',
+      type: "url",
+      name: "url",
+      value: "",
+      vaild: "required",
+      option: ""
+    },
+    {
+      width: '3',
+      label: 'EMAIL',
+      type: "email",
+      name: "email",
+      value: "",
+      vaild: "",
+      option: ""
+    }]
+  for (let i in form_item) {
+    for (let j in form_item[i]) {
+      console.log(j + ":" + form_item[i][j])
+    }
+  }
+}
+*/
+
+/*========================
+Test1
+=========================== */
+/*
+function test1() {
+  let item = {
+    width: '3',
+    label: '姓名',
+    type: "text",
+    name: "name",
+    value: "",
+    valid: "required",
+    option: "單選1|單選2|單選3"
+  };
+
+  let form_item = '';
+  for (let i in item) {
+    form_item += i + ': '
+    for (let j in item) + item[i] + '\n';
+    console.log(form_item);
+  }
+}
+*/
+
+/*=====================================
+  Get
+=====================================*/
+function doGet(e) {
+  //-------------------------------------取得全域變數
+  global = get_global();
+  //-------------------------------------menu子樣板
+  menu = Sheet.render('menu', { global: global });
+  //--------------------------------------------------------管理員路由
+  if (global['isAdmin'] === true) {
+    //路由 全域變數
+    Route.path("form_global", form_global);
+  }
+
+  Route.path("iframe", index);//嵌入網址
+  Route.path("iframe_1", iframe_1);//嵌入網站
+  //--------------------------------------------------------管理員路由 end
+
+  if (Route[e.parameter.op]) {
+    return Route[e.parameter.op](e);
+  } else {
+    return index(e);
+  }
+}
+
+/*=====================================
+  Post
+=====================================*/
+function doPost(e) {
+  console.log(e);
+  //-------------------------------------取得全域變數
+  global = get_global();
+  //-------------------------------------menu子樣板
+  menu = Sheet.render('menu', { global: global });
+
+
+  let content = '';
+  let form = '';
+  for (let i in e.parameter) {
+    form += i + ': ' + e.parameter[i] + '<br>';
+  }
+
+  let button = Sheet.render("button", { bg: 'btn-success', title: '返回表單', message: '', url: 'callback_url', target: '' });
+  //-------------------------------------------- 動態訊息 url => 轉向
+  content += Sheet.render("show_message", { global: global, bg: 'bg-primary', title: '返回表單', message: form + button });
+
+  content += JSON.stringify(e);
+
+  // 主樣板
+  return Sheet.render('index', { content: content, menu: menu }, global['網站標題']);//bootstrap_table
+
+  //--------------------------------------------------------管理員路由
+  if (global['isAdmin'] === true) {
+
+  }
+
+  //--------------------------------------------------------管理員路由 end
+
+  if (Route[e.parameter.op]) {
+    return Route[e.parameter.op](e);
+  } else {
+    return index(e);
+  }
+}
+
+/*=====================================
+ 安裝程式
+=====================================*/
+function setup() {
+  //-------------------------------------------- 把變數存入指令碼屬性
+  SCRIPT_PROP.setProperty("ssId", Sheet.getSs().getId());
+  SCRIPT_PROP.setProperty("adminEmail", Session.getActiveUser().getEmail());//管理員email
+
+  // 建立 全域變數
+  create_global();
+
+
+}
+}

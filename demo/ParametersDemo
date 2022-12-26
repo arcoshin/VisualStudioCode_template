@@ -1,0 +1,41 @@
+{"contentLength":1781,
+"parameters":{
+    "email":["abcx@yahoo.com.tw"],
+    "week":["9999-W20"],
+    "textarea":["文字區域"],
+    "password":["zxcasd"],
+    "name":["無名氏"],
+    "search":["S26"],
+    <!-- <---會發現parameters複選有抓取到多選--->
+    "checkbox":["多選2","多選3"],
+    <!-- <---會發現parameters複選有抓取到多選--->
+    "url":["https:*//www.gitHAHA.com"],
+    "range":["6"],
+    "select_m":["下拉選單(多選)2"],
+    "select":["下拉選單2"],
+    "month":["9999-12"],
+    "number":["1"],
+    "radio":["單選2"],
+    "date":["9999-09-09"],
+    "color":["#000000"]},
+    "queryString":"",
+    "contextPath":"",
+    "parameter":{
+        "range":"6",
+        "date":"9999-09-09",
+        "color":"#000000",
+        "search":"S26",
+        "week":"9999-W20",
+        "email":"abcx@yahoo.com.tw",
+        "radio":"單選2",
+        <!-- <---會發現複選只有抓取到一個--->
+        "select_m":"下拉選單(多選)2",
+        <!-- <---會發現複選只有抓取到一個--->
+        "password":"zxcasd",
+        "number":"1",
+        "url":"https:*//www.gitHAHA.com",
+        "checkbox":"多選2",
+        "month":"9999-12",
+        "select":"下拉選單2",
+        "textarea":"文字區域",
+        "name":"無名氏"}}
